@@ -72,6 +72,10 @@ public class Millionenshow implements Game, Serializable {
 			if (inp.equalsIgnoreCase(answers[this.fragenr])) {
 				this.fragenr++;
 
+			}else if(inp.equals("SAVE"))
+			{
+				isSerialized = true;
+				
 			}else {
 				finished = true;
 				break;
@@ -90,6 +94,9 @@ public class Millionenshow implements Game, Serializable {
 		return this.finished;
 
 	}
+	public boolean Serialized() {
+		return this.isSerialized;
+	}
 	 
 
 	@Override
@@ -102,10 +109,11 @@ public class Millionenshow implements Game, Serializable {
 	{
 		try
 		{
-			FileOutputStream file = new FileOutputStream(filename);
-			ObjectOutputStream o = new ObjectOutputStream(file);
-			o.writeObject(obj);
-			o.close();
+			FileOutputStream fos = new FileOutputStream(filename);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(obj);
+			oos.close();
+			
 		}
 		catch (IOException e)
 		{
@@ -124,8 +132,8 @@ public class Millionenshow implements Game, Serializable {
 			Object ret = null;
 			try
 			{
-				FileInputStream file = new FileInputStream(filename);
-				ObjectInputStream o = new ObjectInputStream(file);
+				FileInputStream fis = new FileInputStream(filename);
+				ObjectInputStream o = new ObjectInputStream(fis);
 				ret =  o.readObject();
 				o.close();
 			}

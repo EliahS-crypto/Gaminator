@@ -1,11 +1,21 @@
 package at.htlle.guessanumber;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Random;
 
 import at.htlle.games.Game;
 
-public class GuessANumber implements Game
+public class GuessANumber implements Game, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int myNumber;
 	private final int MAX_NUMBER = 100;
 	private boolean finished = false;
@@ -33,7 +43,12 @@ public class GuessANumber implements Game
 	public String next(String inp) 
 	{
 		
+		
 		this.nGuesses ++;
+		
+		if(inp.equals("SAVE")) {
+			finished = true;
+		}
 		
 		Integer guessed = -1;
 		try
@@ -51,6 +66,7 @@ public class GuessANumber implements Game
 			return "Correct ! " + "This quest took you " + this.nGuesses + " guesses.\n" +
 				   "You " + (this.nGuesses < avgTries ? "just had luck" : "could have been better.") + ".";
 		}
+		
 		
 		if(myNumber < guessed)
 		{
@@ -90,4 +106,47 @@ public class GuessANumber implements Game
 	{
 		return this.finished;
 	}
+	
+	public void serialize(Object obj, String filename)
+	{
+		try
+		{
+			FileOutputStream file = new FileOutputStream(filename);
+			ObjectOutputStream o = new ObjectOutputStream(file);
+			o.writeObject(obj);
+			o.close();
+		}
+		catch (IOException e)
+		{
+			System.err.println(e);
+		}
+
+
+		/**
+		 * Deserialisiert das erste Objekt aus der Datei
+		 * @param filename
+		 * @return
+		 */
+	}
+		public Object deserialize(String filename)
+		{
+			Object ret = null;
+			try
+			{
+				FileInputStream file = new FileInputStream(filename);
+				ObjectInputStream o = new ObjectInputStream(file);
+				ret =  o.readObject();
+				o.close();
+			}
+			catch (IOException e)
+			{
+				System.err.println(e);
+			}
+			catch (ClassNotFoundException e)
+			{
+				System.err.println(e);
+			}
+
+			return ret;
+		}
 }

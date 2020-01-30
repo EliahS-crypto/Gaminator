@@ -7,8 +7,6 @@ import java.nio.file.Paths;
 
 import at.htlle.games.Game;
 import at.htlle.guessanumber.GuessANumber;
-import at.htlle.ms.Millionenshow;
-import at.httle.ticktacktoe.createTTT;
 
 /**
  * Eine einfache Starterklasse 
@@ -16,9 +14,9 @@ import at.httle.ticktacktoe.createTTT;
  */
 public class GameEngine
 {
+	private static String filename = "D:\\myObj.obj";
+	private static GuessANumber guess;
 
-	private static String filename = "D:\\myGame.obj";
-	private static Millionenshow m;
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -26,12 +24,12 @@ public class GameEngine
 	public static void main(String[] args) throws IOException
 	{
 		// Spiel initialisieren
-		 m = new Millionenshow();
+		 guess = new GuessANumber();
 		
-		// Hier bitte das eigene Spiel aufrufen, sonst in dieser Klasse (und auch in dem Game Intrafce nichts Ã¤ndern)
+		// Hier bitte das eigene Spiel aufrufen, sonst in dieser Klasse (und auch in dem Game Intrafce nichts ändern)
 		
 		// und starten
-		play(m);
+		play(guess);
 	}
 
 	/**
@@ -46,29 +44,24 @@ public class GameEngine
 		System.out.println("============== You are playing " + g.getName() + " ================");
 
 		if(Paths.get(filename).toFile().exists()) {
-			g = (Game) Millionenshow.deserialize((filename));
+			g = (Game) guess.deserialize((filename));
+			System.out.println("true");
 		}
-		
 		// Spiel starten und Text ausgeben
 		System.out.println(g.start());
 
 		// Von der Konsole wird immer Zeilenweise gelesen
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		
-		
 		// Solange das Spiel nicht beendet ist
 		while(g.isFinished() == false)
 		{
 			String eingabe = in.readLine();
 			if(eingabe.equals("SAVE")) {
-				Millionenshow.serialize(m, filename);
-			}else {
-			System.out.println(g.next(eingabe));
+				guess.serialize(g, filename);
 			}
+			System.out.println(g.next(in.readLine()));
 		}
-		
-		
-		
 		// Spiel mitteilen dass es beendet wurde
 		System.out.println(g.stop());
 	}
