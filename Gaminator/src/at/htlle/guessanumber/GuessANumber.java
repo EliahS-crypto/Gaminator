@@ -46,10 +46,6 @@ public class GuessANumber implements Game, Serializable
 		
 		this.nGuesses ++;
 		
-		if(inp.equals("SAVE")) {
-			finished = true;
-		}
-		
 		Integer guessed = -1;
 		try
 		{
@@ -67,6 +63,9 @@ public class GuessANumber implements Game, Serializable
 				   "You " + (this.nGuesses < avgTries ? "just had luck" : "could have been better.") + ".";
 		}
 		
+		if(guessed.toString().equals("SAVE")) {
+			this.finished = true;
+		}
 		
 		if(myNumber < guessed)
 		{
@@ -107,6 +106,7 @@ public class GuessANumber implements Game, Serializable
 		return this.finished;
 	}
 	
+	/*
 	public void serialize(Object obj, String filename)
 	{
 		try
@@ -127,7 +127,8 @@ public class GuessANumber implements Game, Serializable
 		 * @param filename
 		 * @return
 		 */
-	}
+	/*} */
+/*
 		public Object deserialize(String filename)
 		{
 			Object ret = null;
@@ -149,4 +150,5 @@ public class GuessANumber implements Game, Serializable
 
 			return ret;
 		}
+		*/
 }
