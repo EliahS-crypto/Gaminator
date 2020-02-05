@@ -13,10 +13,9 @@ import at.htlle.GameEngine;
 import at.htlle.games.Game;
 
 public class Millionenshow implements Game, Serializable {
-	
+
 	private static final long serialVersionUID = -1559480890557480752L;
-	Scanner eingabe = new Scanner(System.in);
-	int fragenr = 0;
+	int fragenr;
 	BufferedReader br;
 	private boolean finished = false;
 	private boolean isSerialized = false;
@@ -36,9 +35,13 @@ public class Millionenshow implements Game, Serializable {
 
 	@Override
 	public String start() {
-
-		return "Wir beginnen mit den Fragen. Der Schwierigkeitsgrad wird von Frage zu Frage immer höher. Drücken Sie Enter.";
-	
+		
+		if (isSerialized == true) {
+			return "Du spielst nun dein voriges Spiel weiter.\n\n" + questions[this.fragenr];
+		}
+		fragenr = 0;
+		return "Wir beginnen mit den Fragen. Der Schwierigkeitsgrad wird von Frage zu Frage immer höher.\n\n" + questions[fragenr];
+		
 
 	}
 
@@ -57,36 +60,28 @@ public class Millionenshow implements Game, Serializable {
 	 * Exceptions werden von der Gameengine nicht abgearbeitet und muessen daher in
 	 * dieser Funktion abgefangen werden.
 	 * 
-	 * @param inp
-	 *            Text der in der Commandline vom Benutzer eingegeben wurde.
+	 * @param inp Text der in der Commandline vom Benutzer eingegeben wurde.
 	 */
 
 	@Override
 	public String next(String inp) {
 
-		while (this.fragenr < this.questions.length && finished == false) {
-			String naechsteFrage = questions[this.fragenr];
-
-			System.out.println(naechsteFrage);
-			inp = eingabe.next();
-			if (inp.equalsIgnoreCase(answers[this.fragenr])) {
-				this.fragenr++;
-
-			}else if(inp.equals("SAVE"))
-			{
-				isSerialized = true;
-				
-			}else {
-				finished = true;
-				break;
-				//return "Leider war das falsch. " + answers[this.fragenr] + " wäre die richtige Antwort";
-
+		
+		if (inp.equalsIgnoreCase(answers[this.fragenr])) {
+			this.fragenr++;
+			if(this.fragenr == this.questions.length) {
+				this.finished = true;
+				return "Richtig!!! Das waren alle Fragen";
 			}
-			stop();
+			return "Richtig! \nNächste Frage:\n" + questions[this.fragenr];
+
+		}else {
+			finished = true;
+			return "Leider war das falsch. " + answers[this.fragenr] + " wäre die "
+					+ "richtige Antwort";
+
+		
 		}
-
-		return "Ende";
-
 	}
 
 	@Override
@@ -94,58 +89,50 @@ public class Millionenshow implements Game, Serializable {
 		return this.finished;
 
 	}
+
 	public boolean Serialized() {
 		return this.isSerialized;
 	}
-	 
 
 	@Override
 	public String showSolution() {
 
 		return "The right answers is :" + answers;
 	}
-	
-	public static void serialize(Object obj, String filename)
-	{
-		try
-		{
-			FileOutputStream fos = new FileOutputStream(filename);
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(obj);
-			oos.close();
-			
-		}
-		catch (IOException e)
-		{
+
+	public void serialize(Object obj, String filename) {
+		try {
+			this.isSerialized = true;
+			FileOutputStream file = new FileOutputStream(filename);
+			ObjectOutputStream o = new ObjectOutputStream(file);
+			o.writeObject(obj);
+			o.close();
+		} catch (IOException e) {
 			System.err.println(e);
 		}
-
+	}
 
 		/**
 		 * Deserialisiert das erste Objekt aus der Datei
+		 * 
 		 * @param filename
 		 * @return
 		 */
-	}
-		public static Object deserialize(String filename)
-		{
-			Object ret = null;
-			try
-			{
-				FileInputStream fis = new FileInputStream(filename);
-				ObjectInputStream o = new ObjectInputStream(fis);
-				ret =  o.readObject();
-				o.close();
-			}
-			catch (IOException e)
-			{
-				System.err.println(e);
-			}
-			catch (ClassNotFoundException e)
-			{
-				System.err.println(e);
-			}
 
-			return ret;
+
+	public Object deserialize(String filename) {
+		Object ret = null;
+		try {
+			FileInputStream file = new FileInputStream(filename);
+			ObjectInputStream o = new ObjectInputStream(file);
+			ret = o.readObject();
+			o.close();
+		} catch (IOException e) {
+			System.err.println(e);
+		} catch (ClassNotFoundException e) {
+			System.err.println(e);
 		}
+
+		return ret;
+	}
 }

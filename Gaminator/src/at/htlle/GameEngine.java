@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 
 import at.htlle.games.Game;
 import at.htlle.guessanumber.GuessANumber;
+import at.htlle.ms.Millionenshow;
 
 /**
  * Eine einfache Starterklasse
@@ -19,8 +20,9 @@ import at.htlle.guessanumber.GuessANumber;
  * @author Hutter
  */
 public class GameEngine {
-	private static String filename = "D:\\myObj.obj";
+	private static String filename = "D:\\myGame.obj";
 	private static GuessANumber guess;
+	private static Game mill;
 
 	/**
 	 * @param args
@@ -29,13 +31,13 @@ public class GameEngine {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		// Spiel initialisieren
-		guess = new GuessANumber();		
+		mill = new Millionenshow();
 
 		// Hier bitte das eigene Spiel aufrufen, sonst in dieser Klasse (und auch in dem
 		// Game Intrafce nichts ändern)
 
 		// und starten
-		play(guess);
+		play(mill);
 	}
 
 	/**
@@ -44,23 +46,16 @@ public class GameEngine {
 	 * 
 	 * @param g zu spielendes Spiel
 	 * @throws IOException
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
 	 */
 	public static void play(Game g) throws IOException, ClassNotFoundException {
 		System.out.println("============== You are playing " + g.getName() + " ================");
-		
-		File pathtofile = Paths.get("D:\\myGame.obj").toFile();
-		
-		if(pathtofile.exists()) {
-			try (FileInputStream fis = new FileInputStream("D:\\myGame.obj");
-					ObjectInputStream ois = new ObjectInputStream(fis)) {
-				g = (Game) ois.readObject();
-				
-				pathtofile.delete();
-			}
-			System.out.println("true");
+
+		if (Paths.get(filename).toFile().exists()) {
+			g = (Game) g.deserialize(filename);
+			Paths.get(filename).toFile().delete();
 		}
-		
+
 		// Spiel starten und Text ausgeben
 		System.out.println(g.start());
 
@@ -70,13 +65,12 @@ public class GameEngine {
 		// Solange das Spiel nicht beendet ist
 		while (g.isFinished() == false) {
 			String eingabe = in.readLine();
-			if(eingabe.equals("SAVE")) {
-				try (FileOutputStream fos = new FileOutputStream("D:\\myGame.obj");
-						ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-					oos.writeObject(g);
-				}
-			}else {
-			System.out.println(g.next(eingabe));
+			if (eingabe.equals("SAVE")) {
+				g.serialize(g, filename);
+				System.out.println("Spiel gespeichert");
+				break;
+			} else {
+				System.out.println(g.next(eingabe));
 			}
 		}
 
